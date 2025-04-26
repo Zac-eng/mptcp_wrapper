@@ -2,11 +2,12 @@
 
 #include <sys/socket.h>
 #include <sys/epoll.h>
+#include <sys/file.h>
 #include <netinet/in.h>
-#include <cstdlib>
-#include <unistd.h>
-#include <string.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 #include <queue>
 
@@ -30,3 +31,5 @@ public:
   virtual void handleOutEvent(void) = 0;
 
 };
+
+int set_non_blocking(int fd);

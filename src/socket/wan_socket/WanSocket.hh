@@ -4,6 +4,9 @@
 #include "WanStream.hh"
 #include <sys/socket.h>
 
+#define PORT 4200
+#define BIND_IP "192.168.32.1"
+
 class WanSocket {
 
 private:
@@ -14,8 +17,8 @@ private:
 public:
   WanSocket(int sock_fd, std::queue<std::string>& to_que, std::queue<std::string>& from_que);
   ~WanSocket();
-  WanStream* listen();
-  WanStream* connect();
+  WanStream* listenOn();
+  WanStream* connectTo();
 
 };
 

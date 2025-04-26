@@ -5,16 +5,21 @@ LanSocket::LanSocket(int sock_fd,
   std::queue<std::string>& from_que
 ): ASocket(sock_fd, to_que, from_que) {}
 
-LanSocket* createLanSocket(const char* intf_name) {
+LanSocket* createLanSocket(
+  const char* intf_name,
+  std::queue<std::string>& to_que,
+  std::queue<std::string>& from_que
+) {
   int sock_fd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
   if (sock_fd < 0) {
     return NULL;
   }
-  if (setsockopt(sock_fd, SOL_SOCKET, SO_BINDTODEVICE, intf_name, strlen(intf_name)) < 0) {
+  if (setsockopt(sock_fd, SOL_SOCKET, SO_BINDTODEVICE, intf_name, strlen(intf_name)) < 0 \
+    || set_non_blocking(sock_fd) != 0) {
     close(sock_fd);
     return NULL;
   }
-  LanSocket* socket = new LanSocket(sock_fd);
+  return new LanSocket(sock_fd, to_que, from_que);
 }
 
 void LanSocket::handleInEvent() {
@@ -32,4 +37,8 @@ void LanSocket::handleInEvent() {
     if (n < BUFFER_SIZE)
       break;
   }
+}
+
+void LanSocket::handleOutEvent(void) {
+  
 }

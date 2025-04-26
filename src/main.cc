@@ -3,6 +3,7 @@
 #include <cstring>
 #include <string>
 #include <queue>
+#include <iostream>
 #include <exception>
 
 #define MAX_EVENTS 10
@@ -20,31 +21,32 @@ int main(int argc, char* argv[]) {
     int event_count;
 
     if (argc < 2 || epoll_fd < 0 || wan_sock == NULL || lan_sock == NULL) {
-      return 1;
+      std::exit(1);
     }
     if (std::strcmp(argv[1], "listen") == 0) {
-      wan_stream = wan_sock->listen();
+      wan_stream = wan_sock->listenOn();
     }
     else if (std::strcmp(argv[1], "connect") == 0) {
-      wan_stream = wan_sock->connect();
+      wan_stream = wan_sock->connectTo();
     }
     else {
-      return 1;
+      std::exit(1);
     }
     if (lan_sock->addEpoll(epoll_fd) != 0 || wan_stream->addEpoll(epoll_fd) != 0) {
-      return 1;
+      std::exit(1);
     }
     while (true) {
       event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, TIMEOUT);
       for (int i = 0; i < event_count; ++i) {
         ASocket* sock = static_cast<ASocket*>(events[i].data.ptr);
-        if (events[i].events == EPOLLIN)
+        if (events[i].events & EPOLLIN)
           sock->handleInEvent();
-        if (events[i].events == EPOLLOUT)
+        if (events[i].events & EPOLLOUT)
           sock->handleOutEvent();
       }
     }
+    return 0;
   } catch (std::exception& e) {
-
+    std::cerr << e.what() << std::endl;
   }
 }
