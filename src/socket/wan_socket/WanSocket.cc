@@ -35,7 +35,17 @@ WanStream* WanSocket::listenOn() {
 }
 
 WanStream* WanSocket::connectTo() {
-
+  sockaddr_in serv_addr;
+  memset(&serv_addr, 0, sizeof(serv_addr));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons(PORT);
+  if (inet_pton(AF_INET, BIND_IP, &serv_addr.sin_addr) <= 0) {
+    return NULL;
+  }
+  if (connect(_sock_fd, reinterpret_cast<sockaddr *>(&serv_addr), sizeof(serv_addr)) < 0) {
+    return NULL;
+  }
+  return new WanStream(_sock_fd, _to_que, _from_que);
 }
 
 WanSocket* createWanSocket(std::queue<std::string> to_que, std::queue<std::string> from_que) {
