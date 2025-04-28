@@ -14,7 +14,9 @@ LanSocket* createLanSocket(
   if (sock_fd < 0) {
     return NULL;
   }
+  int on = 1;
   if (setsockopt(sock_fd, SOL_SOCKET, SO_BINDTODEVICE, intf_name, strlen(intf_name)) < 0 \
+    || setsockopt(sock_fd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0 \
     || set_non_blocking(sock_fd) != 0) {
     close(sock_fd);
     return NULL;
@@ -37,8 +39,23 @@ void LanSocket::handleInEvent() {
     if (n < BUFFER_SIZE)
       break;
   }
+  _to_que.push(message);
 }
 
 void LanSocket::handleOutEvent(void) {
-  
+  sockaddr_in dest_addr;
+  memset(&dest_addr, 0, sizeof(dest_addr));
+  dest_addr.sin_family = AF_INET;
+  if (inet_pton(AF_INET, BIND_IP, &dest_addr.sin_addr) != 1) {
+    perror("inet_pton");
+    return;
+  }
+  if (_from_que.empty())
+    return;
+  const char* message = _from_que.front().c_str();
+  _from_que.pop();
+  ssize_t bytes_sent = sendto(_sock_fd, message, sizeof(message), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+  if (bytes_sent < 0) {
+    std::exit(EXIT_FAILURE);
+  }
 }

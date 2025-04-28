@@ -23,7 +23,10 @@ void WanStream::handleInEvent(void) {
 }
 
 void WanStream::handleOutEvent(void) {
+  if (_from_que.empty())
+    return;
   const char *message = _from_que.front().c_str();
+  _from_que.pop();
   ssize_t bytes_sent = write(_sock_fd, message, std::strlen(message));
   if (bytes_sent < 0)
     throw std::runtime_error("failed to send");
