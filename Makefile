@@ -1,44 +1,30 @@
+NAME=mptcp_wrapper
 CXX=g++
-CXXFLAGS=-Wall -Wextra -Werror
-SENDER=sender
-RECEIVER=receiver
+CXXFLAGS=-Wall -Wextra -Werror -std=c++11 -Isrc
 SRC_DIR=./src
 OBJ_DIR=./object
 RM=rm -rf
 
-build: $(SENDER) $(RECEIVER)
+SRCS=$(shell find $(SRCDIR) -type f -name '*.cc')
+OBJS=$(subst $(SRC_DIR),$(OBJ_DIR),$(SRCS:.cc=.o))
 
-S_SRC_DIR=$(SRC_DIR)/$(SENDER)
-S_OBJ_DIR=$(OBJ_DIR)/$(SENDER)
-S_SRCS=$(wildcard $(S_SRC_DIR)/*.cc)
-S_OBJS=$(subst $(S_SRC_DIR),$(S_OBJ_DIR),$(S_SRCS:.cc=.o))
+build: $(NAME)
 
-$(S_OBJ_DIR)/%.o: $(S_SRC_DIR)/%.cc
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cc
 	mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(SENDER): $(S_OBJS)
-	$(CXX) $(CXXFLAGS) $(S_OBJS) -o $(S_OBJ_DIR)/$@
-
-R_SRC_DIR=$(SRC_DIR)/$(RECEIVER)
-R_OBJ_DIR=$(OBJ_DIR)/$(RECEIVER)
-R_SRCS=$(wildcard $(R_SRC_DIR)/*.cc)
-R_OBJS=$(subst $(R_SRC_DIR),$(R_OBJ_DIR),$(R_SRCS:.cc=.o))
-
-$(R_OBJ_DIR)/%.o: $(R_SRC_DIR)/%.cc
-	mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(RECEIVER): $(R_OBJS)
-	$(CXX) $(CXXFLAGS) $(R_OBJS) -o $(R_OBJ_DIR)/$@
+$(NAME): $(OBJS)
+	echo $(SRCS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 run: build
-	$(S_OBJ_DIR)/$(SENDER) & $(R_OBJ_DIR)/$(RECEIVER) & wait
+	$(NAME)
 
 clean:
-	$(RM) $(S_OBJS) $(R_OBJS)
-
-fclean: clean
 	$(RM) $(OBJ_DIR)
 
-re: fclean all
+fclean: clean
+	$(RM) $(NAME)
+
+re: fclean build

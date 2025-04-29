@@ -6,7 +6,7 @@ LanSocket::LanSocket(int sock_fd,
 ): ASocket(sock_fd, to_que, from_que) {}
 
 LanSocket* createLanSocket(
-  const char* intf_name,
+  char const* intf_name,
   std::queue<std::string>& to_que,
   std::queue<std::string>& from_que
 ) {

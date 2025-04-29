@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ASocket.hh"
+#include "socket/ASocket.hh"
 #include "socket/wan_socket/WanSocket.hh"
 #include <string>
 #include <net/ethernet.h>
@@ -16,4 +16,4 @@ public:
 
 };
 
-LanSocket* createLanSocket();
+LanSocket* createLanSocket(char const* intf_name, std::queue<std::string>& to_que, std::queue<std::string>& from_que);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ASocket.hh"
+#include "socket/ASocket.hh"
 #include "WanStream.hh"
 #include <sys/socket.h>
 
@@ -23,4 +23,4 @@ public:
 
 };
 
-WanSocket* createWanSocket();
+WanSocket* createWanSocket(std::queue<std::string> to_que, std::queue<std::string> from_que);

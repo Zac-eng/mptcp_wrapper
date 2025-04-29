@@ -1,5 +1,5 @@
-#include "WanSocket.hh"
-#include "LanSocket.hh"
+#include "socket/wan_socket/WanSocket.hh"
+#include "socket/lan_socket/LanSocket.hh"
 #include <cstring>
 #include <string>
 #include <queue>
@@ -8,13 +8,14 @@
 
 #define MAX_EVENTS 10
 #define TIMEOUT 5
+#define LAN_INTF "enp1s0"
 
 int main(int argc, char* argv[]) {
   try {
     std::queue<std::string> lan_que;
     std::queue<std::string> wan_que;
-    LanSocket* lan_sock = createLanSocket();
-    WanSocket* wan_sock = createWanSocket();
+    LanSocket* lan_sock = createLanSocket(LAN_INTF, wan_que, lan_que);
+    WanSocket* wan_sock = createWanSocket(lan_que, wan_que);
     WanStream* wan_stream;
     int epoll_fd = epoll_create(MAX_EVENTS);
     epoll_event events[MAX_EVENTS];
