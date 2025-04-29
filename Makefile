@@ -19,7 +19,7 @@ $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 run: build
-	$(NAME)
+	./$(NAME)
 
 clean:
 	$(RM) $(OBJ_DIR)

@@ -12,12 +12,12 @@ LanSocket* createLanSocket(
 ) {
   int sock_fd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
   if (sock_fd < 0) {
+    perror("raw sock creation");
     return NULL;
   }
-  int on = 1;
   if (setsockopt(sock_fd, SOL_SOCKET, SO_BINDTODEVICE, intf_name, strlen(intf_name)) < 0 \
-    || setsockopt(sock_fd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0 \
     || set_non_blocking(sock_fd) != 0) {
+      perror("socket option");
     close(sock_fd);
     return NULL;
   }

@@ -7,7 +7,6 @@
 #define PORT 4200
 #define BIND_IP "192.168.32.1"
 
-
 class WanSocket {
 
 private:
